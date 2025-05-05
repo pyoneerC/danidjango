@@ -1,0 +1,13 @@
+<ul>
+    {% for product in products %}
+    <h2>
+        {{ product.name }}
+    </h2>
+    <p>
+        {{ product.get_price }}
+    </p>
+    <p>
+        {{ product.get_scraped_at }}
+    </p>
+    {% endfor %}
+</ul>
