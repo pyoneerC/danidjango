@@ -4,10 +4,15 @@ from django.shortcuts import render
 from danimax.models import Product
 
 
-def index(request, product_id):
+def index(request):
+    products = Product.objects.all()
+    context = {"products": products}
+    return render(request, "danimax/index.html", context)
+
+def detail(request, product_id):
     try:
-        products = Product.objects.all().order_by('-scraped_at')[:5]
+        product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
         raise Http404("Product does not exist")
-    context = {"products": products}
+    context = {"product": product}
     return render(request, "danimax/detail.html", context)

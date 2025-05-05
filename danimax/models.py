@@ -20,6 +20,9 @@ class Product(models.Model):
     def get_scraped_at(self):
         return self.scraped_at.strftime("%Y-%m-%d %H:%M:%S")
 
+    def get_url(self):
+        return self.url if self.url else "https://example.com"
+
     class Meta:
         ordering = ['-scraped_at']
         verbose_name = 'Product'
