@@ -22,11 +22,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-bnhz1!e5zvf@v9^a4&sybwgodofrby!&l+9!s1%y_ns+)^-0%x'
 
+CELERY_BROKER_URL = 'assured-shrew-49745.upstash.io'
+CELERY_RESULT_BACKEND = 'assured-shrew-49745.upstash.io'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
+
+# If using django-celery-beat
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -38,7 +47,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'danimax'
+    'danimax',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
