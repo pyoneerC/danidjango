@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import ssl
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,15 +23,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-bnhz1!e5zvf@v9^a4&sybwgodofrby!&l+9!s1%y_ns+)^-0%x'
 
-CELERY_BROKER_URL = 'assured-shrew-49745.upstash.io'
-CELERY_RESULT_BACKEND = 'assured-shrew-49745.upstash.io'
+CELERY_BROKER_URL = 'redis://default:AcJRAAIjcDFkZmQ4MzA5NGM2MjU0NTNlOWI4OTVjYzNiODAwZjY5MnAxMA@assured-shrew-49745.upstash.io:6379'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL  # same Redis instance for results
+
+broker_use_ssl = {
+    "ssl_cert_reqs": ssl.CERT_OPTIONAL,
+    "check_hostname": False,
+}
+
+# ValueError: Cannot set verify_mode to CERT_NONE when check_hostname is enabled.
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
 
-# If using django-celery-beat
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULE = {
+    'scrape-atomo-every-12-hours': {
+        'task': 'run_atomo_scraper', # Name of the task from @shared_task
+        'schedule': crontab(minute='0', hour='9,21'), # Run at 9:00 AM and 9:00 PM
+    },
+}
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
