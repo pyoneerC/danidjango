@@ -1,16 +1,13 @@
-[project]
+[tool.poetry]
 name = "djangoproject2"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "pyoneerC",email = "maxcomperatutti@gmail.com"}
-]
+authors = ["pyoneerC <maxcomperatutti@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.10"
-dependencies = [
-    "django-extensions (>=4.1,<5.0)"
-]
 
+[tool.poetry.dependencies]
+python = ">=3.10"
+django-extensions = ">=4.1,<5.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
