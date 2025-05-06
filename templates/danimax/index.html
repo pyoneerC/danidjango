@@ -9,7 +9,15 @@
     .forbes-title {
       font-family: 'Georgia', serif;
     }
+    .increase { color: red; font-weight: bold; }
+    .decrease { color: green; font-weight: bold; }
   </style>
+
+  <!-- CSV + Table Helpers -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
@@ -24,8 +32,7 @@
     <p class="mt-2 text-sm font-medium tracking-wide text-gray-700 uppercase" id="scan-time"></p>
   </div>
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Gainers and Losers Header -->
     <h2 class="text-3xl forbes-title font-bold text-center text-gray-900 mb-1">
       Today's Gainers and Losers
@@ -34,92 +41,44 @@
       Reflects price changes since last scan
     </p>
 
-    <!-- Top Winners/Losers -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
-      {% for product in products|slice:":10" %}
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center hover:shadow-md transition">
-        {% if product.image_url %}
-        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-16 h-16 object-contain mb-2 rounded-full" />
-        {% else %}
-        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2 text-xl">
-          🛒
-        </div>
-        {% endif %}
-
-        <div class="font-medium text-gray-900 mb-1">{{ product.name }}</div>
-
-        {% if product.price_change > 0 %}
-        <div class="text-green-600 font-semibold">
-          ⬆ +{{ product.price_change }}%
-        </div>
-        {% elif product.price_change < 0 %}
-        <div class="text-red-600 font-semibold">
-          ⬇ {{ product.price_change }}%
-        </div>
-        {% else %}
-        <div class="text-gray-500 font-medium">No change</div>
-        {% endif %}
-      </div>
-      {% endfor %}
+    <div id="cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16 text-center">
+      <!-- Dynamic product cards inserted here -->
     </div>
 
-    <!-- Whole Aisle Section Title -->
+    <!-- Whole Aisle -->
     <div class="bg-yellow-300 text-center py-2 rounded-t-md mb-4">
       <h3 class="text-xl font-bold tracking-wide text-gray-800 forbes-title uppercase">THE WHOLE AISLE</h3>
     </div>
 
-    <!-- Full Product List -->
-    <div class="space-y-4 mb-20">
-      {% for product in products %}
-      <div class="bg-white rounded-md shadow-sm p-4 hover:shadow-md transition">
-        <a href="{{ product.get_url }}" target="_blank" class="block text-lg font-medium text-blue-600 hover:underline">
-          {{ product.name }}
-        </a>
-        <div class="flex justify-between mt-2">
-          <div class="text-green-700 font-semibold">{{ product.get_price }}</div>
-          <div class="text-sm text-gray-500">🕒 {{ product.get_scraped_at }}</div>
-        </div>
-      </div>
-      {% empty %}
-      <p class="text-center text-gray-500">No products found.</p>
-      {% endfor %}
+    <table id="historyTable" class="display w-full text-sm">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Product Name</th>
+          <th>Old Price</th>
+          <th>New Price</th>
+          <th>% Change</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <!-- Populated via JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Methodology Section -->
+  <div class="max-w-5xl mx-auto px-4 mt-20 mb-12">
+    <div class="bg-yellow-300 text-center py-2 rounded-t-md">
+      <h3 class="text-xl font-bold tracking-wide text-gray-800 forbes-title">METHODOLOGY</h3>
     </div>
-
-    <!-- Methodology Section -->
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-  <div class="bg-yellow-300 text-center py-2 rounded-t-md">
-    <h3 class="text-xl font-bold tracking-wide text-gray-800 forbes-title uppercase">METHODOLOGY</h3>
-  </div>
-  <div class="bg-white p-6 rounded-b-md shadow text-sm leading-relaxed text-gray-800 font-serif">
-    <p><em>Argentina Supermarket Inflation Tracker</em> monitors the daily price changes of a curated selection of food, beverage, and household products from major Argentine supermarket websites. Prices are scraped every 12 hours using automated tools, and tracked against historical values to detect increases or drops.</p>
-
-    <p class="mt-4">The percentage change shown represents the price variation since the last recorded scan. Products featured at the top of the page reflect the biggest movers — both up and down — across the monitored catalog. Only official online stores with publicly listed prices are included in the dataset.</p>
-
-    <p class="mt-4">To ensure accuracy, duplicate entries, out-of-stock prices, and sudden outliers are filtered using validation rules. This tracker does not account for promotions, club card discounts, or regional price differences unless explicitly stated on the product page.</p>
-  </div>
-</div>
-  <!-- Footer -->
-<footer class="bg-gray-200 mt-20 text-gray-600 text-sm pt-10 pb-6 border-t">
-  <div class="max-w-5xl mx-auto px-4 text-center">
-    <h2 class="text-xl font-bold text-black font-serif mb-2">Max Comperatore</h2>
-    <p class="mb-4">© 2025 Argentina Supermarket Inflation Tracker. All rights reserved.</p>
-
-    <hr class="my-4 border-gray-300" />
-
-    <div class="flex flex-wrap justify-center gap-4 text-xs text-gray-600">
-      <a href="#" class="hover:underline">Privacy</a>
-      <a href="#" class="hover:underline">Terms</a>
-      <a href="#" class="hover:underline">Data Sources</a>
-      <a href="#" class="hover:underline">Contact</a>
-      <a href="#" class="hover:underline">Feedback</a>
-      <a href="#" class="hover:underline">Press Kit</a>
-      <a href="#" class="hover:underline">API Access</a>
+    <div class="bg-white p-6 rounded-b-md shadow text-sm leading-relaxed text-gray-800 font-serif">
+      <p><em>Argentina Supermarket Inflation Tracker</em> parses pricing data changes from a CSV file generated by our price monitoring engine. It highlights significant changes in supermarket prices in near real-time.</p>
+      <p class="mt-4">The "Top Gainers and Losers" section highlights the products with the most recent and significant price shifts. The full table below includes all tracked product changes, sortable and searchable using interactive filters.</p>
     </div>
   </div>
-</footer>
-  </div>
 
-  <!-- Time Script -->
+  <!-- Script -->
   <script>
     function formatTime(date) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -128,10 +87,72 @@
     const now = new Date();
     const lastScan = new Date(now.getTime() - 6 * 60 * 60 * 1000);
     const nextScan = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+    document.getElementById('scan-time').textContent = `Last scanned: ${formatTime(lastScan)} • Next scan: ${formatTime(nextScan)}`;
 
-    const text = `Last scanned: ${formatTime(lastScan)} • Next scan: ${formatTime(nextScan)}`;
-    document.getElementById('scan-time').textContent = text;
+    async function loadCSVData() {
+      const response = await fetch('price_changes.csv');
+      if (!response.ok) {
+        document.getElementById('cards').innerHTML = '<p class="text-center text-gray-500 col-span-full">No data available yet.</p>';
+        return;
+      }
+      const csvText = await response.text();
+
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const data = results.data;
+
+          // Sort by most recent change
+          data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          const cardsContainer = document.getElementById('cards');
+          const tableBody = document.getElementById('historyBody');
+
+          // Show top 10 in cards
+          data.slice(0, 10).forEach(row => {
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-lg shadow p-4 hover:shadow-md transition";
+
+            card.innerHTML = `
+              <div class="font-semibold text-gray-900 mb-1">${row.product_name}</div>
+              <div class="${parseFloat(row.change_percentage) >= 0 ? 'increase' : 'decrease'}">
+                ${parseFloat(row.change_percentage).toFixed(2)}%
+              </div>
+              <a href="${row.product_url}" target="_blank" class="text-blue-500 underline text-sm mt-1 block">Link</a>
+            `;
+            cardsContainer.appendChild(card);
+          });
+
+          // Table rows
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+
+            const change = parseFloat(row.change_percentage);
+            const changeClass = isNaN(change) ? '' : (change >= 0 ? 'increase' : 'decrease');
+
+            tr.innerHTML = `
+              <td>${row.timestamp}</td>
+              <td>${row.product_name}</td>
+              <td>${row.old_price_ars}</td>
+              <td>${row.new_price_ars}</td>
+              <td class="${changeClass}">${!isNaN(change) ? change.toFixed(2) + '%' : 'N/A'}</td>
+              <td><a href="${row.product_url}" target="_blank" class="text-blue-600 underline">View</a></td>
+            `;
+            tableBody.appendChild(tr);
+          });
+
+          // Init DataTable
+          $(document).ready(function() {
+            $('#historyTable').DataTable({
+              order: [[0, 'desc']]
+            });
+          });
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCSVData);
   </script>
-
 </body>
 </html>
