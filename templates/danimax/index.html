@@ -1,63 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>🛍️ Products</title>
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            background-color: #f4f4f4;
-            padding: 40px;
-            color: #333;
-        }
-
-        .product-list {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .product-card {
-            background: #fff;
-            margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .product-name {
-            font-size: 1.5em;
-            color: #0077cc;
-            margin-bottom: 10px;
-        }
-
-        .product-price {
-            font-weight: bold;
-            color: #0a8f60;
-        }
-
-        .product-time {
-            font-size: 0.85em;
-            color: #888;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Argentina Supermarket Inflation Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .forbes-title {
+      font-family: 'Georgia', serif;
+    }
+  </style>
 </head>
-<body>
-    <div class="product-list">
-        {% for product in products %}
-        <div class="product-card">
-            <a href="{{ product.get_url }}" target="_blank" class="product-name">
-                {{ product.name }}
-            </a>
-            <div class="product-price">{{ product.get_price }}</div>
-            <div class="product-time">🕒 {{ product.get_scraped_at }}</div>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- Header Banner -->
+  <div class="bg-yellow-300 text-center py-3 border-b-4 border-black">
+    <h1 class="text-sm tracking-widest font-bold text-red-700 uppercase">
+      Argentina's Real-Time
+    </h1>
+    <h2 class="text-5xl md:text-6xl font-extrabold text-black forbes-title tracking-wide">
+      SUPERMARKET INFLATION
+    </h2>
+    <p class="mt-2 text-sm font-medium tracking-wide text-gray-700 uppercase" id="scan-time"></p>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Gainers and Losers Header -->
+    <h2 class="text-3xl forbes-title font-bold text-center text-gray-900 mb-1">
+      Today's Gainers and Losers
+    </h2>
+    <p class="text-center text-sm text-gray-500 mb-8">
+      Reflects price changes since last scan
+    </p>
+
+    <!-- Top Winners/Losers -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
+      {% for product in products|slice:":10" %}
+      <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center hover:shadow-md transition">
+        {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-16 h-16 object-contain mb-2 rounded-full" />
+        {% else %}
+        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-2 text-xl">
+          🛒
         </div>
-        {% empty %}
-        <p>No products found.</p>
-        {% endfor %}
+        {% endif %}
+
+        <div class="font-medium text-gray-900 mb-1">{{ product.name }}</div>
+
+        {% if product.price_change > 0 %}
+        <div class="text-green-600 font-semibold">
+          ⬆ +{{ product.price_change }}%
+        </div>
+        {% elif product.price_change < 0 %}
+        <div class="text-red-600 font-semibold">
+          ⬇ {{ product.price_change }}%
+        </div>
+        {% else %}
+        <div class="text-gray-500 font-medium">No change</div>
+        {% endif %}
+      </div>
+      {% endfor %}
     </div>
+
+    <!-- Whole Aisle Section Title -->
+    <div class="bg-yellow-300 text-center py-2 rounded-t-md mb-4">
+      <h3 class="text-xl font-bold tracking-wide text-gray-800 forbes-title uppercase">THE WHOLE AISLE</h3>
+    </div>
+
+    <!-- Full Product List -->
+    <div class="space-y-4 mb-20">
+      {% for product in products %}
+      <div class="bg-white rounded-md shadow-sm p-4 hover:shadow-md transition">
+        <a href="{{ product.get_url }}" target="_blank" class="block text-lg font-medium text-blue-600 hover:underline">
+          {{ product.name }}
+        </a>
+        <div class="flex justify-between mt-2">
+          <div class="text-green-700 font-semibold">{{ product.get_price }}</div>
+          <div class="text-sm text-gray-500">🕒 {{ product.get_scraped_at }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-gray-500">No products found.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Methodology Section -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+  <div class="bg-yellow-300 text-center py-2 rounded-t-md">
+    <h3 class="text-xl font-bold tracking-wide text-gray-800 forbes-title uppercase">METHODOLOGY</h3>
+  </div>
+  <div class="bg-white p-6 rounded-b-md shadow text-sm leading-relaxed text-gray-800 font-serif">
+    <p><em>Argentina Supermarket Inflation Tracker</em> monitors the daily price changes of a curated selection of food, beverage, and household products from major Argentine supermarket websites. Prices are scraped every 12 hours using automated tools, and tracked against historical values to detect increases or drops.</p>
+
+    <p class="mt-4">The percentage change shown represents the price variation since the last recorded scan. Products featured at the top of the page reflect the biggest movers — both up and down — across the monitored catalog. Only official online stores with publicly listed prices are included in the dataset.</p>
+
+    <p class="mt-4">To ensure accuracy, duplicate entries, out-of-stock prices, and sudden outliers are filtered using validation rules. This tracker does not account for promotions, club card discounts, or regional price differences unless explicitly stated on the product page.</p>
+  </div>
+</div>
+  <!-- Footer -->
+<footer class="bg-gray-200 mt-20 text-gray-600 text-sm pt-10 pb-6 border-t">
+  <div class="max-w-5xl mx-auto px-4 text-center">
+    <h2 class="text-xl font-bold text-black font-serif mb-2">Inflación AR</h2>
+    <p class="mb-4">© 2025 Argentina Supermarket Inflation Tracker. All rights reserved.</p>
+
+    <hr class="my-4 border-gray-300" />
+
+    <div class="flex flex-wrap justify-center gap-4 text-xs text-gray-600">
+      <a href="#" class="hover:underline">Privacy</a>
+      <a href="#" class="hover:underline">Terms</a>
+      <a href="#" class="hover:underline">Data Sources</a>
+      <a href="#" class="hover:underline">Contact</a>
+      <a href="#" class="hover:underline">Feedback</a>
+      <a href="#" class="hover:underline">Press Kit</a>
+      <a href="#" class="hover:underline">API Access</a>
+    </div>
+  </div>
+</footer>
+  </div>
+
+  <!-- Time Script -->
+  <script>
+    function formatTime(date) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    const now = new Date();
+    const lastScan = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+    const nextScan = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+    const text = `Last scanned: ${formatTime(lastScan)} • Next scan: ${formatTime(nextScan)}`;
+    document.getElementById('scan-time').textContent = text;
+  </script>
+
 </body>
 </html>
