@@ -1,10 +1,10 @@
 import os
-
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'danimax.settings')
+# Set the default Django settings module for the 'celery' program.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dani.settings')
 
-app = Celery('danimax')
+app = Celery('dani')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

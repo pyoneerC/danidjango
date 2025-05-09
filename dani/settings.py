@@ -26,14 +26,16 @@ STATIC_ROOT = '/static/'
 SECRET_KEY = 'django-insecure-bnhz1!e5zvf@v9^a4&sybwgodofrby!&l+9!s1%y_ns+)^-0%x'
 
 CELERY_BROKER_URL = 'redis://default:AcJRAAIjcDFkZmQ4MzA5NGM2MjU0NTNlOWI4OTVjYzNiODAwZjY5MnAxMA@assured-shrew-49745.upstash.io:6379'
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL  # same Redis instance for results
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
-broker_use_ssl = {
-    "ssl_cert_reqs": ssl.CERT_OPTIONAL,
-    "check_hostname": False,
+# Explicit SSL configuration for Upstash
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_REQUIRED, # Upstash uses Let's Encrypt, so system CAs should work
+    # You might need to specify 'ssl_ca_certs' if your system CAs are not up-to-date
+    # or if Upstash provides a specific CA bundle. For now, let's assume system CAs are fine.
 }
-
-# ValueError: Cannot set verify_mode to CERT_NONE when check_hostname is enabled.
+# If you want to apply the same to the result backend:
+CELERY_RESULT_BACKEND_USE_SSL = CELERY_BROKER_USE_SSL.copy()
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
