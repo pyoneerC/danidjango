@@ -11,46 +11,6 @@
     }
     .increase { color: red; font-weight: bold; }
     .decrease { color: green; font-weight: bold; }
-    
-    /* New Forbes-style table styling */
-    .forbes-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: Arial, sans-serif;
-    }
-    .forbes-table thead th {
-      background-color: #f8f8f8;
-      color: #333;
-      font-weight: bold;
-      padding: 10px 15px;
-      text-align: left;
-      border-bottom: 2px solid #ddd;
-    }
-    .forbes-table tbody td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
-      vertical-align: middle;
-    }
-    .forbes-table tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    .forbes-table tbody tr:hover {
-      background-color: #f1f1f1;
-    }
-    .rank-column {
-      width: 50px;
-      text-align: center;
-      font-weight: bold;
-    }
-    .name-column {
-      font-weight: bold;
-    }
-    .change-negative {
-      color: green;
-    }
-    .change-positive {
-      color: red;
-    }
   </style>
 
   <!-- CSV + Table Helpers -->
@@ -90,56 +50,19 @@
       <h3 class="text-xl font-bold tracking-wide text-gray-800 forbes-title uppercase">THE WHOLE AISLE</h3>
     </div>
 
-    <table id="historyTable" class="forbes-table display w-full">
+    <table id="historyTable" class="display w-full text-sm">
       <thead>
         <tr>
-          <th class="rank-column">#</th>
-          <th class="name-column">Product</th>
+          <th>Timestamp</th>
+          <th>Product Name</th>
           <th>Old Price</th>
           <th>New Price</th>
-          <th>Change</th>
-          <th>Company</th>
-          <th>Country</th>
+          <th>% Change</th>
+          <th>Link</th>
         </tr>
       </thead>
       <tbody id="historyBody">
-        <!-- Example rows - these would be populated dynamically -->
-        <tr>
-          <td class="rank-column">1</td>
-          <td class="name-column">Eton Musk</td>
-          <td>$3827.9</td>
-          <td>$321.8</td>
-          <td class="change-negative">-1.7%</td>
-          <td>Total, SpaceX</td>
-          <td>United States</td>
-        </tr>
-        <tr>
-          <td class="rank-column">2</td>
-          <td class="name-column">Mark Zuckerberg</td>
-          <td>$42.9</td>
-          <td>$3.3.9</td>
-          <td class="change-negative">-1.6%</td>
-          <td>Facebook</td>
-          <td>United States</td>
-        </tr>
-        <tr>
-          <td class="rank-column">3</td>
-          <td class="name-column">Jeff Bezos</td>
-          <td>$4.3.9</td>
-          <td>$3.7.8</td>
-          <td class="change-negative">-2.8%</td>
-          <td>Amazon</td>
-          <td>United States</td>
-        </tr>
-        <tr>
-          <td class="rank-column">4</td>
-          <td class="name-column">Larry Ellison</td>
-          <td>$2022.9</td>
-          <td>$40</td>
-          <td class="change-negative">-1.9%</td>
-          <td>Oracle</td>
-          <td>United States</td>
-        </tr>
+        <!-- Populated via JS -->
       </tbody>
     </table>
   </div>
@@ -178,6 +101,7 @@
   </div>
     </footer>
 
+  <!-- Script -->
   <script>
     function formatTime(date) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -188,15 +112,70 @@
     const nextScan = new Date(now.getTime() + 6 * 60 * 60 * 1000);
     document.getElementById('scan-time').textContent = `Last scanned: ${formatTime(lastScan)} • Next scan: ${formatTime(nextScan)}`;
 
-    // Initialize DataTable with Forbes styling
-    $(document).ready(function() {
-      $('#historyTable').DataTable({
-        order: [[0, 'asc']],
-        paging: false,
-        searching: false,
-        info: false
+    async function loadCSVData() {
+      const response = await fetch('price_changes.csv');
+      if (!response.ok) {
+        document.getElementById('cards').innerHTML = '<p class="text-center text-gray-500 col-span-full">No data available yet.</p>';
+        return;
+      }
+      const csvText = await response.text();
+
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const data = results.data;
+
+          // Sort by most recent change
+          data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          const cardsContainer = document.getElementById('cards');
+          const tableBody = document.getElementById('historyBody');
+
+          // Show top 10 in cards
+          data.slice(0, 10).forEach(row => {
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-lg shadow p-4 hover:shadow-md transition";
+
+            card.innerHTML = `
+              <div class="font-semibold text-gray-900 mb-1">${row.product_name}</div>
+              <div class="${parseFloat(row.change_percentage) >= 0 ? 'increase' : 'decrease'}">
+                ${parseFloat(row.change_percentage).toFixed(2)}%
+              </div>
+              <a href="${row.product_url}" target="_blank" class="text-blue-500 underline text-sm mt-1 block">Link</a>
+            `;
+            cardsContainer.appendChild(card);
+          });
+
+          // Table rows
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+
+            const change = parseFloat(row.change_percentage);
+            const changeClass = isNaN(change) ? '' : (change >= 0 ? 'increase' : 'decrease');
+
+            tr.innerHTML = `
+              <td>${row.timestamp}</td>
+              <td>${row.product_name}</td>
+              <td>${row.old_price_ars}</td>
+              <td>${row.new_price_ars}</td>
+              <td class="${changeClass}">${!isNaN(change) ? change.toFixed(2) + '%' : 'N/A'}</td>
+              <td><a href="${row.product_url}" target="_blank" class="text-blue-600 underline">View</a></td>
+            `;
+            tableBody.appendChild(tr);
+          });
+
+          // Init DataTable
+          $(document).ready(function() {
+            $('#historyTable').DataTable({
+              order: [[0, 'desc']]
+            });
+          });
+        }
       });
-    });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCSVData);
   </script>
 </body>
 </html>
