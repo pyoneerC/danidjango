@@ -52,7 +52,7 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'danidjango.onrender.com',
