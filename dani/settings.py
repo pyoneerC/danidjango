@@ -23,8 +23,7 @@ STATIC_ROOT = '/static/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 0)
+SECRET_KEY = 'django-insecure-bnhz1!e5zvf@v9^a4&sybwgodofrby!&l+9!s1%y_ns+)^-0%x'
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0') # Fallback to local Redis for dev
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
