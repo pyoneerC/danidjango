@@ -1,0 +1,131 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib60/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+# Usually PyInstaller files are created in a separate context (e.g. build folder)
+# but let's cover them anyway
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+pytestdebug.log
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/staticfiles/
+/media/ # If you're storing user-uploaded media locally during development
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Poetry
+# poetry.lock should be committed, but .pids and other runtime files shouldn't.
+.pids/
+# If you're building wheels with Poetry and don't want them in git
+# dist/ # Already covered above
+
+# Sass / SCSS
+.sass-cache/
+*.css.map
+
+# Node.js / Frontend build stuff (if you have a frontend build process)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json # Commit if using npm, ignore if you prefer only yarn.lock or package.json
+yarn.lock # Commit if using yarn
+
+# IDE / Editor specific files
+.idea/ # JetBrains IDEs (PyCharm, IntelliJ, etc.)
+.vscode/ # Visual Studio Code (settings can be shared, but workspace-specific caches shouldn't)
+*.sublime-project
+*.sublime-workspace
+nbproject/ # NetBeans
+*.swp # Vim swap files
+*~ # Backup files
+*.bak
+*.tmp
+
+# OS-generated files
+.DS_Store # macOS
+Thumbs.db # Windows
+ehthumbs.db # Windows
+
+# Celery
+celerybeat-schedule # If not using django-celery-beat's database scheduler
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Example files (if you have them and don't want them tracked)
+# *.example
+
+# Terraform (if you use it for infrastructure)
+# .terraform/
+# *.tfstate
+# *.tfstate.backup
+
+# Security sensitive files
+# Add any other files containing secrets or credentials here
+# For example, if you ever accidentally create a settings_secret.py
+# settings_secret.py
+
+# Price change log if you don't want it in git (though for this project, you might)
+# price_changes.csv # Decide if you want to commit this historical data
+# atomo_django.db # This is your scraper's database, decide if it's purely transient or if you want to back it up via git (usually not for live DBs)

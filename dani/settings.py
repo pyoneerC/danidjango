@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+import os
 import ssl
 from pathlib import Path
 from celery.schedules import crontab
@@ -23,9 +24,9 @@ STATIC_ROOT = '/static/'
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bnhz1!e5zvf@v9^a4&sybwgodofrby!&l+9!s1%y_ns+)^-0%x'
+SECRET_KEY = os.environ.get('SECRET_KEY', 0)
 
-CELERY_BROKER_URL = 'redis://default:AcJRAAIjcDFkZmQ4MzA5NGM2MjU0NTNlOWI4OTVjYzNiODAwZjY5MnAxMA@assured-shrew-49745.upstash.io:6379'
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0') # Fallback to local Redis for dev
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 # Explicit SSL configuration for Upstash
@@ -40,7 +41,7 @@ CELERY_RESULT_BACKEND_USE_SSL = CELERY_BROKER_USE_SSL.copy()
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'America/Argentina/Buenos_Aires'
+CELERY_TIMEZONE = os.environ.get('CELERY_TIMEZONE', 'UTC') # Fallback to UTC
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 

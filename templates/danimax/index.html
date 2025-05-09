@@ -110,7 +110,7 @@
     const now = new Date();
     const lastScan = new Date(now.getTime() - 6 * 60 * 60 * 1000);
     const nextScan = new Date(now.getTime() + 6 * 60 * 60 * 1000);
-    document.getElementById('scan-time').textContent = `Last scanned: ${formatTime(lastScan)} • Next scan: ${formatTime(nextScan)}`;
+    document.getElementById('scan-time').textContent = `Last scanned: 9:00 AM - Next scan: 9:00 PM`;
 
     async function loadCSVData() {
       const response = await fetch('price_changes.csv');
