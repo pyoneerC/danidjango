@@ -1,58 +1,25 @@
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib import admin
-from django.contrib.admin.views.decorators import staff_member_required
-from django.urls import path, include
-from django.views.decorators.cache import never_cache
-from django_ratelimit.decorators import ratelimit
+"""
+URL configuration for dani project.
 
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path
 from danimax import views
 
-class SecureAdminSite(admin.AdminSite):
-    login_template = 'admin/custom_login.html'
-
-    def get_urls(self):
-        from django.urls import re_path
-        urls = super().get_urls()
-
-        urls.insert(0, re_path(r'^.*$', staff_member_required(
-            ratelimit(key='ip', rate='5/m', method='POST')(
-                super().get_urls()[0].callback
-            )
-        )))
-        return urls
-
-
-secure_admin = SecureAdminSite(name='secure_admin')
-
-# Apply security decorators to admin login
-admin.site.login = ratelimit(key='ip', rate='5/m')(never_cache(admin.site.login))
-
 urlpatterns = [
-    # Custom secure admin path (not the default /admin/)
-    path('control-panel-7X9z/', include(secure_admin.urls)),
-
-    # Your other paths
+    path('admin/', admin.site.urls),
     path('', views.index, name='index'),
-    path("<int:product_id>/", views.detail, name="detail"),
-
-    # Security middleware
-    path('security/', include('django_security_headers.urls')),
+    path("<int:product_id>/", views.detail, name="detail")
 ]
-
-# Additional security measures
-if not settings.DEBUG:
-    urlpatterns += [
-        # HTTP Security Headers
-        path('security-headers/', include('django_secure_headers.urls')),
-    ]
-
-    # Only serve admin over HTTPS
-    admin.site.admin_view = staff_member_required(
-        requires_https=True
-    )(admin.site.admin_view)
-
-# Static files in development only
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
