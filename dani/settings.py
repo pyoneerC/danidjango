@@ -54,7 +54,21 @@ CELERY_BEAT_SCHEDULE = {
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'danidjango.onrender.com',
+    'www.danidjango.onrender.com', # If you might use www
+    'localhost',
+    '127.0.0.1',
+]
+
+# *** THIS IS THE PRIMARY FIX FOR YOUR CSRF ERROR ***
+CSRF_TRUSTED_ORIGINS = [
+    'https://danidjango.onrender.com',
+    'https://www.danidjango.onrender.com',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 # Application definition
 
